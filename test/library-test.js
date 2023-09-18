@@ -1,0 +1,214 @@
+var assert = require("chai").assert;
+
+var {
+  createLibrary,
+  addBook,
+  checkoutBook,
+  takeStock
+} = require("../src/library.js")
+
+describe("library.js", function() {
+  describe("createLibrary", function() {
+    it.skip("should be a function", function() {
+      assert.isFunction(createLibrary);
+    });
+
+    it.skip("should have a name", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+
+      assert.equal(nyLibrary.name, "New York Public Library");
+    });
+
+    it.skip("should be able to have a different name", function() {
+      var goldenLibrary = createLibrary("Golden Public Library");
+
+      assert.equal(goldenLibrary.name, "Golden Public Library");
+    });
+
+    it.skip("should have shelves", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+
+      assert.isObject(nyLibrary.shelves);
+    });
+
+    it.skip("should have several different types of shelves", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+
+      assert.deepEqual(nyLibrary.shelves.fantasy, []);
+      assert.deepEqual(nyLibrary.shelves.fiction, []);
+      assert.deepEqual(nyLibrary.shelves.nonFiction, []);
+    });
+  });
+
+  describe("addBook", function() {
+    it.skip("should add book to the fantasy shelf", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+
+      var dracula = {
+        title: "Dracula",
+        mainCharacter: { name: "Count Dracula", age: undefined },
+        pageCount: 418,
+        genre: "fantasy"
+      };
+
+      addBook(nyLibrary, dracula);
+
+      assert.equal(nyLibrary.shelves.fantasy[0], dracula);
+    });
+
+    it.skip("should add books to the correct shelves automatically", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+      var dracula = {
+        title: "Dracula",
+        mainCharacter: { name: "Count Draula", age: undefined },
+        pageCount: 418,
+        genre: "fantasy"
+      };
+
+      var paleBlueDot = {
+        title: "The Pale Blue Dot",
+        mainCharacter: undefined,
+        pageCount: 187,
+        genre: 'nonFiction'
+      };
+
+      addBook(nyLibrary, dracula);
+      addBook(nyLibrary, paleBlueDot);
+
+      assert.equal(nyLibrary.shelves.fantasy[0], dracula);
+      assert.equal(nyLibrary.shelves.nonFiction[0], paleBlueDot);
+    });
+  });
+
+  describe("checkoutBook", function() {
+    it.skip("should unshelf a book to check out a book to a patron", function() {
+      var dracula = {
+        title: "Dracula",
+        mainCharacter: { name: "Count Dracula", age: undefined },
+        pageCount: 418,
+        genre: "fantasy"
+      };
+
+      var bornACrime = {
+        title: "Born a Crime",
+        mainCharacter: { name: "Trevor Noah", age: 36 },
+        pageCount: 304,
+        genre: "nonFiction"
+      };
+      
+      var prideAndPrejudice = {
+        title: "Pride and Prejudice",
+        mainCharacter: { name: "Eliabeth Bennet", age: 20 },
+        pageCount: 432,
+        genre: "fiction"
+      };
+
+      var nyLibrary = createLibrary("New York Public Library");
+
+      addBook(nyLibrary, dracula);
+      addBook(nyLibrary, bornACrime);
+      addBook(nyLibrary, prideAndPrejudice);
+
+      var result1 = checkoutBook(nyLibrary, "Pride and Prejudice", "fiction");
+
+      assert.deepEqual(nyLibrary.shelves, {fantasy: [dracula], fiction: [], nonFiction: [bornACrime]});;
+      assert.equal(result1, "You have now checked out Pride and Prejudice from the New York Public Library.");
+
+      var result2 = checkoutBook(nyLibrary, "Born a Crime", "nonFiction");
+
+      assert.deepEqual(nyLibrary.shelves, {fantasy: [dracula], fiction: [], nonFiction: []});;
+      assert.equal(result2, "You have now checked out Born a Crime from the New York Public Library.")
+    });
+
+    it.skip("should only checkout a book if the book is on the shelves", function() {
+      var nyLibrary = createLibrary("New York Public Library");
+
+      var error1 = checkoutBook(nyLibrary, "The Fifth Season", "fantasy");
+
+      assert.equal(error1, "Sorry, there are currently no copies of The Fifth Season available at the New York Public Library.");
+
+      var error2 = checkoutBook(nyLibrary, "Yes Please", "nonFiction");
+
+      assert.equal(error2, "Sorry, there are currently no copies of Yes Please available at the New York Public Library.");
+    });
+  });
+
+  describe('takeStock', function() {
+
+    it.skip('should be able to take stock of how many books are on a shelf', function() {
+      var hyperion = {
+        title: "Hyperion",
+        mainCharacter: { name: "The Shrike", age: null },
+        pageCount: 482,
+        genre: "fantasy"
+      };
+
+      var dune = {
+        title: "Dune",
+        mainCharacter: { name: "Paul", age: 15 },
+        pageCount: 421,
+        genre: "fantasy"
+      };
+
+      var prideAndPrejudice = {
+        title: "Pride and Prejudice",
+        mainCharacter: { name: "Eliabeth Bennet", age: 20 },
+        pageCount: 432,
+        genre: "fiction"
+      }
+
+      var auroraLibrary = createLibrary("Aurora Public Library");
+
+      addBook(auroraLibrary, hyperion);
+      addBook(auroraLibrary, dune);
+      addBook(auroraLibrary, prideAndPrejudice);
+
+      assert.equal(takeStock(auroraLibrary, 'fantasy'), "There are a total of 2 fantasy books at the Aurora Public Library.")
+    });
+
+    it.skip('should be able to count the number of books on a different shelf', function() {
+      var bornACrime = {
+        title: "Born a Crime",
+        mainCharacter: { name: "Trevor Noah", age: 36 },
+        pageCount: 304,
+        genre: "nonFiction"
+      };
+
+      var laLibrary = createLibrary("Los Angeles Public Library");
+
+      addBook(laLibrary, bornACrime);
+      assert.equal(takeStock(laLibrary, 'nonFiction'), "There are a total of 1 nonFiction books at the Los Angeles Public Library.")
+    });
+
+    it.skip('should be able to take stock of how many books are in the entire collection if a specific shelf is not specified', function() {
+      var dracula = {
+        title: "Dracula",
+        mainCharacter: { name: "Count Dracula", age: undefined },
+        pageCount: 418,
+        genre: "fantasy"
+      };
+
+      var bornACrime = {
+        title: "Born a Crime",
+        mainCharacter: { name: "Trevor Noah", age: 36 },
+        pageCount: 304,
+        genre: "nonFiction"
+      };
+
+      var prideAndPrejudice = {
+        title: "Pride and Prejudice",
+        mainCharacter: { name: "Eliabeth Bennet", age: 20 },
+        pageCount: 432,
+        genre: "fiction"
+      };
+
+      var nyLibrary = createLibrary("New York Public Library");
+
+      addBook(nyLibrary, dracula);
+      addBook(nyLibrary, bornACrime);
+      addBook(nyLibrary, prideAndPrejudice);
+
+      assert.equal(takeStock(nyLibrary), "There are a total of 3 books at the New York Public Library.")
+    });
+  });
+});
